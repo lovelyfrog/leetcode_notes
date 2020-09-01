@@ -1,20 +1,21 @@
 class Solution {
-    HashMap<String, PriorityQueue<String>> map = new HashMap<>();
-    public List<String> findItinerary(List<List<String>> tickets) {
-        List<String> ans = new LinkedList<>();
-        for (List<String> tmp: tickets) {
-            if (!map.containsKey(tmp.get(0))) {
-                map.put(tmp.get(0), new PriorityQueue<String>());
+    public boolean PredictTheWinner(int[] nums) {
+        int n = nums.length;
+        int[][] dp = new int[n][n];
+        int[][] sum = new int[n][n];
+        for (int i = n-1; i >= 0; i--) {
+            for (int j = n-1; j >= i; j--) {
+                if (j == i) sum[i][j] = nums[i];
+                if (j > i) sum[i][j] = sum[i+1][j] + nums[i];
             }
-            map.get(tmp.get(0)).offer(tmp.get(1));
         }
-        dfs("JFK", ans);
-        return ans.reverse();
-    }
-    public void dfs(String city, List<String> ans) {
-        while (map.containsKey(city) && map.get(city).size() != 0) {
-            dfs(map.get(city).poll(), ans);
+        for (int i = n-1; i >= 0; i--) {
+            for (int j = i; j < n; j++) {
+                if (j == i) dp[i][j] = nums[i];
+                if (j > i) dp[i][j] = sum[i][j] - Math.min(dp[i+1][j], dp[i][j-1]);
+            }
         }
-        ans.add(city);
+        if (dp[0][n-1] >= sum[0][n-1] - dp[0][n-1]) return true;
+        return false;
     }
 }
