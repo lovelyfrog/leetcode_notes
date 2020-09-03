@@ -1,56 +1,63 @@
+import java.math.BigInteger;
 class Solution {
-    class Automatation {
-        String START = "start";
-        String SIGNED = "signed";
-        String INTEGER = "integer";
-        String HALFDECIMAL = "halfdecimal";
-        String FALSE = "false";
-        String TRUE = "true";
-        String HALFSCIENCE = "halfscience";
-        String HALFSIGNEDSCIENCE = "halfsignedscience";
-        String DECIMAL = "decimal";
-        String SCIENCE = "science";
-        String POINT = "point";
-        boolean ans = false;
-        String state = START;
-        HashMap<String, String[]> map;
-        public Automatation() {
-            map = new HashMap<>();
-            map.put(START, new String[]{START, POINT, FALSE, INTEGER, SIGNED, FALSE});
-            map.put(POINT, new String[]{FALSE, FALSE, FALSE, DECIMAL, FALSE, FALSE});
-            map.put(SIGNED, new String[]{FALSE, POINT, FALSE, INTEGER, FALSE, FALSE});
-            map.put(INTEGER, new String[]{TRUE, HALFDECIMAL, HALFSCIENCE, INTEGER, FALSE, FALSE});
-            map.put(HALFDECIMAL, new String[]{TRUE, FALSE, HALFSCIENCE, DECIMAL, FALSE, FALSE});
-            map.put(FALSE, new String[]{FALSE, FALSE, FALSE, FALSE, FALSE, FALSE});
-            map.put(TRUE, new String[]{TRUE, FALSE, FALSE, FALSE, FALSE, FALSE});
-            map.put(HALFSCIENCE, new String[]{FALSE, FALSE, FALSE, SCIENCE, HALFSIGNEDSCIENCE, FALSE});
-            map.put(HALFSIGNEDSCIENCE, new String[]{FALSE, FALSE, FALSE, SCIENCE, FALSE, FALSE});
-            map.put(DECIMAL, new String[]{TRUE, FALSE, HALFSCIENCE, DECIMAL, FALSE, FALSE});
-            map.put(SCIENCE, new String[]{TRUE, FALSE, FALSE, SCIENCE, FALSE, FALSE});
+    class TreeNode {
+        TreeNode left;
+        TreeNode right;
+        int treeNodeNum;
+        int val;
+        TreeNode (TreeNode left, TreeNode right, int treeNodeNum, int val) {
+            this.left = left;
+            this.right = right;
+            this.treeNodeNum = treeNodeNum;
+            this.val = val;
         }
-        public int getValue(char c) {
-            if (c == ' ') return 0;
-            if (c == '.') return 1;
-            if (c == 'e' || c == 'E') return 2;
-            if (c >= '0' && c <= '9') return 3;
-            if (c == '+' || c == '-') return 4;
-            return 5;
-        }
-        public void get(String s) {
-            for (int i = 0; i < s.length(); i++) {
-                int index = getValue(s.charAt(i));
-                state = map.get(state)[index];
-            }
-            if (state == TRUE || state == INTEGER || state == DECIMAL || state == SCIENCE || state == HALFDECIMAL) {
-                ans = true;
-            } else {
-                ans = false;
-            }
-        } 
     }
-    public boolean isNumber(String s) {
-        Automatation auto = new Automatation();
-        auto.get(s);
-        return auto.ans;
+    int mod = (int)(1e9 + 7);
+    public int numOfWays(int[] nums) {
+        TreeNode root = buildTree(nums);
+        return (int)(numOfWays(root) - 1);
+    }
+    public TreeNode buildTree(int[] nums) {
+        TreeNode root = new TreeNode(null, null, 1, nums[0]);
+        for (int i = 1; i < nums.length; i++) {
+            TreeNode tmp = root;
+            while (true) {
+                if (nums[i] > tmp.val) {
+                    if (tmp.right == null) {
+                        tmp.right = new TreeNode(null, null, 1, nums[i]);
+                        tmp.treeNodeNum++;
+                        break;
+                    }
+                    tmp.treeNodeNum++;
+                    tmp = tmp.right;
+                }
+                if (nums[i] < tmp.val) {
+                    if (tmp.left == null) {
+                        tmp.left = new TreeNode(null, null, 1, nums[i]);
+                        tmp.treeNodeNum++;
+                        break;
+                    }
+                    tmp.treeNodeNum++;
+                    tmp = tmp.left;
+                }
+            }
+        }
+        return root;
+    } 
+    public int numOfWays(TreeNode root) {
+        if (root == null) return 0;
+        int leftNum, rightNum, choiceNum;
+        BigInteger res = BigInteger.valueOf(1);
+        leftNum = (root.left == null)?1: numOfWays(root.left);
+        rightNum = (root.right == null)?1: numOfWays(root.right);
+        choiceNum = (root.left == null || root.right == null)?1: countNum(root.left.treeNodeNum, root.treeNodeNum-1);
+        return res.multiply(BigInteger.valueOf(leftNum)).multiply(BigInteger.valueOf(rightNum)).multiply(BigInteger.valueOf(choiceNum)).mod(BigInteger.valueOf(mod)).intValue(); 
+    }
+    public int countNum(int m, int n) {
+        BigInteger res = BigInteger.valueOf(1);
+        for (int i = 0; i < m; i++) {
+            res = res.multiply(BigInteger.valueOf(n-i)).divide(BigInteger.valueOf(1+i));
+        }
+        return res.mod(BigInteger.valueOf(mod)).intValue();
     }
 }
