@@ -1,63 +1,63 @@
-import java.math.BigInteger;
 class Solution {
-    class TreeNode {
-        TreeNode left;
-        TreeNode right;
-        int treeNodeNum;
-        int val;
-        TreeNode (TreeNode left, TreeNode right, int treeNodeNum, int val) {
-            this.left = left;
-            this.right = right;
-            this.treeNodeNum = treeNodeNum;
-            this.val = val;
+    List<List<String>> ans;
+    HashMap<List<String>, Integer> map;
+    public List<List<String>> solveNQueens(int n) {
+        ans = new LinkedList<>();
+        map = new HashMap<>();
+        int[][] square = new int[n][n];
+        for (int i = 0; i < n; i++) {
+            dfs(square, 0, i, n);
         }
+        return ans;
     }
-    int mod = (int)(1e9 + 7);
-    public int numOfWays(int[] nums) {
-        TreeNode root = buildTree(nums);
-        return (int)(numOfWays(root) - 1);
-    }
-    public TreeNode buildTree(int[] nums) {
-        TreeNode root = new TreeNode(null, null, 1, nums[0]);
-        for (int i = 1; i < nums.length; i++) {
-            TreeNode tmp = root;
-            while (true) {
-                if (nums[i] > tmp.val) {
-                    if (tmp.right == null) {
-                        tmp.right = new TreeNode(null, null, 1, nums[i]);
-                        tmp.treeNodeNum++;
-                        break;
+    public void dfs(int[][] square, int x, int y, int n) {
+        set(square, x, y, 0, n);
+        if (n == 1) {
+            List<String> tmp = new LinkedList<>();
+            for (int i = 0; i < square.length; i++) {
+                StringBuffer sb = new StringBuffer();
+                for (int j = 0; j < square.length; j++) {
+                    if (square[i][j] > 0) {
+                        sb.append('Q');
+                    } else {
+                        sb.append('.');
                     }
-                    tmp.treeNodeNum++;
-                    tmp = tmp.right;
                 }
-                if (nums[i] < tmp.val) {
-                    if (tmp.left == null) {
-                        tmp.left = new TreeNode(null, null, 1, nums[i]);
-                        tmp.treeNodeNum++;
-                        break;
-                    }
-                    tmp.treeNodeNum++;
-                    tmp = tmp.left;
-                }
+                tmp.add(sb.toString());
+            }
+            if (!map.containsKey(tmp)) {
+                ans.add(tmp);
+                map.put(tmp, 0);
             }
         }
-        return root;
-    } 
-    public int numOfWays(TreeNode root) {
-        if (root == null) return 0;
-        int leftNum, rightNum, choiceNum;
-        BigInteger res = BigInteger.valueOf(1);
-        leftNum = (root.left == null)?1: numOfWays(root.left);
-        rightNum = (root.right == null)?1: numOfWays(root.right);
-        choiceNum = (root.left == null || root.right == null)?1: countNum(root.left.treeNodeNum, root.treeNodeNum-1);
-        return res.multiply(BigInteger.valueOf(leftNum)).multiply(BigInteger.valueOf(rightNum)).multiply(BigInteger.valueOf(choiceNum)).mod(BigInteger.valueOf(mod)).intValue(); 
-    }
-    public int countNum(int m, int n) {
-        BigInteger res = BigInteger.valueOf(1);
-        for (int i = 0; i < m; i++) {
-            res = res.multiply(BigInteger.valueOf(n-i)).divide(BigInteger.valueOf(1+i));
+        int j = 0;
+        if (x + 1 < square.length) {
+            while (j < square.length) {
+                if (square[x+1][j] == 0) dfs(square, x+1, j, n-1);
+                j++;
+            }
         }
-        return res.mod(BigInteger.valueOf(mod)).intValue();
+        set(square, x, y, -n, 0);
+    }
+    public void set(int[][] square, int x, int y, int originValue, int setValue) {
+        square[x][y] = setValue;
+        for (int i = 0; i < square.length; i++) {
+            if (square[x][i] == originValue) square[x][i] = -setValue;
+            if (square[i][y] == originValue) square[i][y] = -setValue;
+        }
+        for (int i = 1; i < square.length; i++) {
+            if (x-i >= 0 && x-i < square.length && y-i >= 0 && y-i < square.length) {
+                if (square[x-i][y-i] == originValue) square[x-i][y-i] = -setValue;
+            }
+            if (x+i >= 0 && x+i < square.length && y+i >= 0 && y+i < square.length) {
+                if (square[x+i][y+i] == originValue) square[x+i][y+i] = -setValue;
+            }
+            if (x-i >= 0 && x-i < square.length && y+i >= 0 && y+i < square.length) {
+                if (square[x-i][y+i] == originValue) square[x-i][y+i] = -setValue;
+            }
+            if (x+i >= 0 && x+i < square.length && y-i >= 0 && y-i < square.length) {
+                if (square[x+i][y-i] == originValue) square[x+i][y-i] = -setValue;
+            }
+        }
     }
 }
