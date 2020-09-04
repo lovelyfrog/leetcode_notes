@@ -1,63 +1,53 @@
+/**
+ * Definition for a binary tree node.
+ * public class TreeNode {
+ *     int val;
+ *     TreeNode left;
+ *     TreeNode right;
+ *     TreeNode(int x) { val = x; }
+ * }
+ */
 class Solution {
-    List<List<String>> ans;
-    HashMap<List<String>, Integer> map;
-    public List<List<String>> solveNQueens(int n) {
-        ans = new LinkedList<>();
-        map = new HashMap<>();
-        int[][] square = new int[n][n];
-        for (int i = 0; i < n; i++) {
-            dfs(square, 0, i, n);
-        }
-        return ans;
+    TreeNode up;
+    public String smallestFromLeaf(TreeNode root) {
+        up = root;
+        StringBuffer ans = new StringBuffer();
+        StringBuffer tmp = new StringBuffer();
+        backTrack(root, tmp, ans);
+        return ans.toString();
     }
-    public void dfs(int[][] square, int x, int y, int n) {
-        set(square, x, y, 0, n);
-        if (n == 1) {
-            List<String> tmp = new LinkedList<>();
-            for (int i = 0; i < square.length; i++) {
-                StringBuffer sb = new StringBuffer();
-                for (int j = 0; j < square.length; j++) {
-                    if (square[i][j] > 0) {
-                        sb.append('Q');
-                    } else {
-                        sb.append('.');
-                    }
-                }
-                tmp.add(sb.toString());
+    public void backTrack(TreeNode root, StringBuffer tmp, StringBuffer ans) {
+        if (root == null) return;
+        tmp.append((char)(root.val + 'a'));
+        if (root.left == null && root.right == null) {
+            if (compare(tmp.reverse(), ans) < 0) {
+                ans.delete(0, ans.length());
+                ans.append(tmp.toString());
             }
-            if (!map.containsKey(tmp)) {
-                ans.add(tmp);
-                map.put(tmp, 0);
-            }
+            tmp.reverse();
+            tmp.delete(tmp.length()-1, tmp.length());
+            return;
         }
-        int j = 0;
-        if (x + 1 < square.length) {
-            while (j < square.length) {
-                if (square[x+1][j] == 0) dfs(square, x+1, j, n-1);
-                j++;
-            }
-        }
-        set(square, x, y, -n, 0);
+        backTrack(root.left, tmp, ans);
+        backTrack(root.right, tmp, ans);
+        tmp.delete(tmp.length()-1, tmp.length());
     }
-    public void set(int[][] square, int x, int y, int originValue, int setValue) {
-        square[x][y] = setValue;
-        for (int i = 0; i < square.length; i++) {
-            if (square[x][i] == originValue) square[x][i] = -setValue;
-            if (square[i][y] == originValue) square[i][y] = -setValue;
-        }
-        for (int i = 1; i < square.length; i++) {
-            if (x-i >= 0 && x-i < square.length && y-i >= 0 && y-i < square.length) {
-                if (square[x-i][y-i] == originValue) square[x-i][y-i] = -setValue;
-            }
-            if (x+i >= 0 && x+i < square.length && y+i >= 0 && y+i < square.length) {
-                if (square[x+i][y+i] == originValue) square[x+i][y+i] = -setValue;
-            }
-            if (x-i >= 0 && x-i < square.length && y+i >= 0 && y+i < square.length) {
-                if (square[x-i][y+i] == originValue) square[x-i][y+i] = -setValue;
-            }
-            if (x+i >= 0 && x+i < square.length && y-i >= 0 && y-i < square.length) {
-                if (square[x+i][y-i] == originValue) square[x+i][y-i] = -setValue;
+    public int compare(StringBuffer a, StringBuffer b) {
+        if (a.length() == 0 && b.length() == 0) return 0;
+        if (a.length() == 0) return 1;
+        if (b.length() == 0) return -1;
+        int i = 0;
+        while (i < a.length() && i < b.length()) {
+            if (a.charAt(i) == b.charAt(i)) {
+                i++;
+            } else if (a.charAt(i) > b.charAt(i)) {
+                return 1;
+            } else {
+                return -1;
             }
         }
+        if (i == a.length() && i == b.length()) return 0;
+        if (i == a.length()) return -1;
+        return 1;
     }
 }
