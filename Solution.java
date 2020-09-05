@@ -1,53 +1,33 @@
-/**
- * Definition for a binary tree node.
- * public class TreeNode {
- *     int val;
- *     TreeNode left;
- *     TreeNode right;
- *     TreeNode(int x) { val = x; }
- * }
- */
 class Solution {
-    TreeNode up;
-    public String smallestFromLeaf(TreeNode root) {
-        up = root;
-        StringBuffer ans = new StringBuffer();
-        StringBuffer tmp = new StringBuffer();
-        backTrack(root, tmp, ans);
-        return ans.toString();
-    }
-    public void backTrack(TreeNode root, StringBuffer tmp, StringBuffer ans) {
-        if (root == null) return;
-        tmp.append((char)(root.val + 'a'));
-        if (root.left == null && root.right == null) {
-            if (compare(tmp.reverse(), ans) < 0) {
-                ans.delete(0, ans.length());
-                ans.append(tmp.toString());
-            }
-            tmp.reverse();
-            tmp.delete(tmp.length()-1, tmp.length());
-            return;
+    StringBuffer sb = new StringBuffer();
+    HashMap<Integer, Integer> map = new HashMap<>();
+    int[] factorial;
+    public String getPermutation(int n, int k) {
+        factorial = new int[n+1];
+        factorial[0] = 1;
+        for (int i = 1; i <= n; i++) {
+            map.put(i, 1);
+            factorial[i] = factorial[i-1] * i;
         }
-        backTrack(root.left, tmp, ans);
-        backTrack(root.right, tmp, ans);
-        tmp.delete(tmp.length()-1, tmp.length());
+        helper(n, k);
+        return sb.toString();
     }
-    public int compare(StringBuffer a, StringBuffer b) {
-        if (a.length() == 0 && b.length() == 0) return 0;
-        if (a.length() == 0) return 1;
-        if (b.length() == 0) return -1;
-        int i = 0;
-        while (i < a.length() && i < b.length()) {
-            if (a.charAt(i) == b.charAt(i)) {
-                i++;
-            } else if (a.charAt(i) > b.charAt(i)) {
-                return 1;
-            } else {
-                return -1;
-            }
+
+    public void helper(int n, int k) {
+        if (n == 0) return;
+        int length = map.size();
+        int subFact = factorial[n-1];
+        int first = (k-1) / subFact + 1;
+        int rest = (k-1) % subFact + 1;
+        for (int i = 1; i <= length; i++) {
+            if (map.get(i) == 1) {
+                first--;
+                if (first == 0) {
+                    sb.append((char)(i+'0'));
+                    map.put(i, 0);
+                }
+            } 
         }
-        if (i == a.length() && i == b.length()) return 0;
-        if (i == a.length()) return -1;
-        return 1;
+        helper(n-1, rest);
     }
 }
