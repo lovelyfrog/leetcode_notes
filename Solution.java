@@ -1,19 +1,19 @@
 class Solution {
     List<List<Integer>> ans = new LinkedList<>();
-    public List<List<Integer>> combine(int n, int k) {
-        List<Integer> curr = new LinkedList<>();
-        backTrack(curr, 1, n, k);
+    List<Integer> curr = new LinkedList<>();
+    public List<List<Integer>> combinationSum3(int k, int n) {
+        backTrack(1, n, k);
         return ans;
     }
-    public void backTrack(List<Integer> curr, int start, int end, int k) {
-        if (k == 0) {
-            ans.add(new LinkedList<Integer>(curr));
+    public void backTrack(int p, int n, int numLeft) {
+        if (n == 0 && numLeft == 0) {
+            ans.add(new LinkedList<>(curr));
             return;
-        };
-        for (int i = start; i <= end - k + 1; i++) {
-            curr.add(i);
-            backTrack(curr, i+1, end, k-1);
-            curr.remove(curr.size()-1);
         }
+        if (n <= 0 || numLeft <= 0) return;
+        backTrack(p+1, n, numLeft);
+        curr.add(p);
+        backTrack(p+1, n-p, numLeft-1);
+        curr.remove(curr.size()-1);
     }
 }
