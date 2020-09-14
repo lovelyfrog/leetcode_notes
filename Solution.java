@@ -1,28 +1,19 @@
 class Solution {
-    public int breakfastNumber(int[] staple, int[] drinks, int x) {
-        int m = staple.length;
-        int n = drinks.length;
-        int mod = (int)1e9 + 7;
-        Arrays.sort(staple);
-        Arrays.sort(drinks);
-        int ans = 0;
-        int j = n-1;
-        for (int i = 0; i < m; i++) {
-            if (j < 0) break;
-            if (staple[i] > x) break;
-            int index = find(drinks, 0, j, x - staple[i]);
-            j = index - 1;
-            if (j >= 0) ans = (ans + j + 1) % mod;
+    public int minimumOperations(String leaves) {
+        int n = leaves.length();
+        int[][] dp = new int[n][3];
+        dp[0][0] = (leaves.charAt(0) == 'r')?0: 1;
+        dp[0][1] = (int)1e5;
+        dp[0][2] = (int)1e5;
+        for (int i = 1; i < n; i++) {
+            char c = leaves.charAt(i);
+            dp[i][0] = dp[i-1][0] + cost(c, 'r');
+            dp[i][1] = Math.min(dp[i-1][0], dp[i-1][1]) + cost(c, 'y');
+            dp[i][2] = Math.min(dp[i-1][1], dp[i-1][2]) + cost(c, 'r');
         }
-        return ans;
+        return dp[n-1][2];
     }
-    public int find(int[] drinks, int i, int j, int left) {
-        // 找到drinks在i,j中第一个大于left的索引。
-        if (drinks[j] <= left) return j+1;
-        if (drinks[i] > left) return i;
-        int middle = (i + j) / 2;
-        if (drinks[middle] <= left) return find(drinks, middle+1, j, left);
-        return find(drinks, i, middle, left);
-
+    public int cost(char a, char b) {
+        return (a == b)?0:1;
     }
 }
