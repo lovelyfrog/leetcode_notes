@@ -22,13 +22,17 @@ public class Main {
         // 3 situations
         if (k < numOfOne) {
             ans.add(1);
-            for (int i = 0; i < numOfX; i++) {
+            for (int i = 0; i < numOfX + 1 - k; i++) {
                 ans.add(0);
+            }
+            for (int i = 0; i < k - 1; i++) {
+                ans.add(1);
             }
 
         } else if (k <= numOfX) {
             if (k == numOfOne) {
                 int flag = 0;
+                int flag2 = 0;
                 for (int i = 0; i < ll.size(); i++) {
                     if (flag == 0 && ll.get(i) == 0) {
                         continue;
@@ -36,13 +40,16 @@ public class Main {
                     if (flag == 1 && ll.get(i) == 0) {
                         ll.set(i, 1);
                         ll.set(i-1, 0);
+                        flag2 = 1;
+
                         break;
                     }
                     if (flag == 0 && ll.get(i) == 1) {
                         flag = 1;
                     }
                 }
-                if (flag == 0) {
+                if (flag2 == 0) {
+                    
                     ans.add(1);
                     for (int i = 0; i < numOfX - numOfOne + 1; i++) {
                         ans.add(0);
