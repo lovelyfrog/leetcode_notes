@@ -1,0 +1,23 @@
+import java.util.*;
+
+public class Main {
+
+    public static void main(String[] args) {
+        Deque<Integer> stack = new LinkedList<>();
+        stack.pop();
+        stack.peek();
+        stack.push(val);
+        Queue<Integer> queue = new LinkedList<>();
+        queue.peek();
+        queue.poll();
+        queue.offer(val);
+        Queue<Integer> minPQ = new PriorityQueue<>();
+        Queue<Integer> maxPQ = new PriorityQueue<>(Collections.reverseOrder());
+
+        StringBuffer sb = new StringBuffer();
+        sb.append(c);
+        sb.delete(i, i+1);
+
+    }
+
+}
