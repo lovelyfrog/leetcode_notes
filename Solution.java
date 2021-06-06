@@ -1,32 +1,30 @@
-/**
- * Definition for singly-linked list.
- * public class ListNode {
- *     int val;
- *     ListNode next;
- *     ListNode(int x) {
- *         val = x;
- *         next = null;
- *     }
- * }
- */
-public class Solution {
-    public ListNode getIntersectionNode(ListNode headA, ListNode headB) {
-        HashMap<ListNode, Integer> map = new HashMap<>();
-        
-        ListNode curr = headA;
-        while (curr != null) {
-            map.put(curr, 1);
-            curr = curr.next;
-        }
-
-        curr = headB;
-        while (curr != null) {
-            if (map.containsKey(curr)) {
-                return curr;
+class Solution {
+    public int findMaxForm(String[] strs, int m, int n) {
+        int l = strs.length;
+        int[][][] dp = new int[l+1][m+1][n+1];
+        for (int i = 1; i <= l; i++) {
+            String curr = strs[i-1];
+            int a = 0, b = 0;
+            for (int t = 0; t < curr.length(); t++) {
+                if (curr.charAt(t) == '0') {
+                    a++;
+                } else {
+                    b++;
+                }
             }
-            curr = curr.next;
-        }
-        return null;
 
+            for (int j = 0; j <= m; j++) {
+                for (int k = 0; k <= n; k++) {
+                    int tmp = dp[i-1][j][k];
+                    if (j-a >= 0 && k-b >= 0) {
+                        if (tmp < dp[i-1][j-a][k-b] + 1) {
+                            tmp = dp[i-1][j-a][k-b] + 1;
+                        }
+                    }
+                    dp[i][j][k] = tmp;
+                }
+            }
+        }
+        return dp[l][m][n];
     }
 }
