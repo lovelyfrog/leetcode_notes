@@ -1,39 +1,29 @@
 class Solution {
-    public int profitableSchemes(int n, int minProfit, int[] group, int[] profit) {
-        int l = group.length;
-        int allSum = 0;
-        for (int i = 0; i < l; i++) {
-            allSum += profit[i];            
-        }
-
-        int[][] former = new int[allSum+1][n+1];
-        int[][] curr = new int[allSum+1][n+1];
-        int ans = 0;
-        int max_value = (int)(1e9) + 7;
-
-        if (minProfit == 0) ans++;
-
-        for (int i = 1; i <= l; i++) {
-            for (int j = allSum; j >= 0; j--) {
-                for (int k = n; k >= 0; k--) {
-                    curr[j][k] = former[j][k];
-                    if (j-profit[i-1] >= 0 && k-group[i-1] >= 0) {
-                        curr[j][k] = (curr[j][k] + former[j-profit[i-1]][k-group[i-1]]) % max_value;
-                        if (j-profit[i-1] == 0 && k-group[i-1] == 0) {
-                            curr[j][k] += 1;
-                        }
-                    }
-                    if (i == l && j >= minProfit) {
-                        ans += curr[j][k];
-                        if (ans >= max_value) ans = ans % max_value;
-                        
-                    }
-
-                }
-            }
-            former = curr;
-        }
+    public int numSquares(int n) {
+        int l = n;
+        // int[][] dp = new int[l+1][n+1];
+        int[] dp = new int[n+1];
         
-        return ans;
+        for (int j = 1; j <= n; j++) {
+            dp[j] = j;
+        }
+
+        for (int i = 1; i*i <= l; i++) {
+            for (int j = 1; j <= n; j++) {
+                int tmp = j - i*i;
+                if (tmp >= 0) dp[j] = Math.min(dp[j], dp[tmp] + 1);
+                // int k = 1;
+                // while (tmp >= 0) {
+                //     if (dp[j] != 0) {
+                //         dp[j] = Math.min(dp[j], dp[tmp]+k);
+                //     } else {
+                //         dp[j] = dp[tmp] + 1;
+                //     }
+                //     tmp -= i*i;
+                //     k++;
+                // }
+            }
+        }
+        return dp[n];
     }
-}                                                                                                                                                                                                                                                                                                       
+}
