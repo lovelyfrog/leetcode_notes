@@ -1,39 +1,60 @@
 class Solution {
-    public int maxPoints(int[][] points) {
-        int n = points.length;
-        double[][] g = new double[n][n];
-        if (n == 1) return 1;
-
-        int ans = 2;
-        for (int i = 0; i < n; i++) {
-            for (int j = i+1; j < n; j++) {
-                if (points[i][0] - points[j][0] == 0) {
-                    g[i][j] = 1e6;
-                    g[j][i] = g[i][j];
-                    continue;
-                }
-                g[i][j] = (double) (points[i][1] - points[j][1]) / (points[i][0] - points[j][0]);
-                g[j][i] = g[i][j];
-
-            }
-        }
-
-        for (int i = 0; i < n; i++) {
-            HashMap<Double, Integer> map = new HashMap<>();
-            for (int j = 0; j < n; j++) {
-                if (j == i) continue;
-                if (!map.containsKey(g[i][j])) {
-                    map.put(g[i][j], 2);
+    HashMap<Integer, List<Integer>> map;
+    HashMap<Integer, Integer> visitedRoute;
+    HashMap<Integer, Integer> visitedStop;
+    Queue<Pair<Integer, Integer>> queue;
+    public int numBusesToDestination(int[][] routes, int source, int target) {
+        map = new HashMap<>();
+        int l = routes.length;
+        visitedRoute = new HashMap<>();
+        visitedStop = new HashMap<>();
+        queue = new LinkedList<>();
+        for (int i = 0; i < l; i++) {
+            for (int j = 0; j < routes[i].length; j++) {
+                if (!map.containsKey(routes[i][j])) {
+                    List<Integer> tmp = new LinkedList<>();
+                    tmp.add(i);
+                    map.put(routes[i][j], tmp);
                 } else {
-                    int tmp = map.get(g[i][j]);
-                    map.put(g[i][j], tmp+1);
-                    if (ans < tmp+1) {
-                        ans = tmp+1;
-                    }
-
+                    List<Integer> tmp = map.get(routes[i][j]);
+                    tmp.add(i);
                 }
             }
         }
-        return ans;
+
+        List<Integer> curr = map.get(source);
+        for (int i = 0; i < curr.size(); i++) {
+            int route = curr.get(i);
+            visitedRoute.put(route, 0);
+            for (int j = 0; j < routes[route]; j++) {
+                if (!visitedStop.containsKey(routes[route][j])) {
+                    queue.offer(new Pair<Integer, Integer>(routes[route][j], 1));
+                    visitedStop.put(routes[route][j], 0);
+                    if (target == routes[route][j]) return 1;
+                }
+            }
+        }
+
+        while (!queue.isEmpty()) {
+            Pair<Integer, Integer> tmp = queue.poll();
+            int currStop = tmp.getKey();
+            curr = map.get(currStop);
+            for (int i = 0; i < curr.size(); i++) {
+                int route = curr.get(i);
+                if (visitedRoute.containsKey(route)) continue;
+                visitedRoute.put(route, 0);
+                for (int j = 0; j < routes[route]; j++) {
+                    if (!visitedStop.containsKey(routes[route][j])) {
+                        queue.offer(new Pair<Integer, Integer>(routes[route][j], tmp.getValue()+1));
+                        visitedStop.put(routes[route][j], 0);
+                        if (target == routes[route][j]) return tmp.getValue()+1;
+                    }
+                }
+            }
+
+        }
+
+        return -1;
+
     }
 }
